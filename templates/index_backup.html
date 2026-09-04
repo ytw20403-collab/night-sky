@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Your Name in the Universe</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+    background:
+        radial-gradient(circle at 50% 30%, #18285c 0%, #080d25 45%, #02030b 100%);
+}
+
+/* Night Sky */
+#sky {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* Shooting Stars */
+.shooting-star {
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, white, transparent);
+    transform: rotate(-35deg);
+    animation: shoot 5s linear infinite;
+}
+
+.one {
+    top: 20%;
+    left: -20%;
+}
+
+.two {
+    top: 55%;
+    left: -30%;
+    animation-delay: 2.5s;
+}
+
+@keyframes shoot {
+    0% {
+        transform: translateX(0) rotate(-35deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    40% {
+        transform: translateX(900px) rotate(-35deg);
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Main */
+.content {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 520px;
+    padding: 38px 25px;
+    border-radius: 25px;
+    background: rgba(8, 12, 35, 0.72);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 0 60px rgba(80,100,255,0.18);
+}
+
+.moon {
+    font-size: 55px;
+    margin-bottom: 12px;
+}
+
+h1 {
+    font-size: 31px;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    color: #b9c4ff;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+
+input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    outline: none;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: #9ca6c8;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background: linear-gradient(135deg, #6575ff, #9b5cff);
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(120,100,255,0.3);
+}
+
+.location-btn {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+#location {
+    margin-top: 15px;
+    color: #b9c4ff;
+    font-size: 14px;
+}
+
+#result {
+    display: none;
+    margin-top: 30px;
+}
+
+.initial {
+    font-size: 82px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ffffff, #8ea0ff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+#welcome {
+    margin-top: 5px;
+}
+
+.message {
+    margin-top: 15px;
+    line-height: 1.7;
+    color: #d7dcff;
+}
+</style>
+</head>
+
+<body>
+
+<div id="sky">
+    <div class="shooting-star one"></div>
+    <div class="shooting-star two"></div>
+</div>
+
+<div class="content">
+
+<div class="card">
+
+    <div class="moon">🌙</div>
+
+    <h1>Your Name in the Universe</h1>
+
+    <p class="subtitle">
+        Enter your name and discover your little place beneath the endless night sky.
+    </p>
+
+    <input
+        type="text"
+        id="name"
+        placeholder="Enter your name..."
+        maxlength="30"
+    >
+
+    <button onclick="createSky()">
+        ✨ Create My Universe
+    </button>
+
+    <button class="location-btn" onclick="getLocation()">
+        📍 Allow My Location
+    </button>
+
+    <p id="location"></p>
+
+    <div id="result">
+
+        <div class="initial" id="initial"></div>
+
+        <h2 id="welcome"></h2>
+
+        <p class="message">
+            Somewhere beneath this endless universe,
+            your name now has its own little piece of the sky. ✨
+        </p>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+/* Generate Stars */
+const sky = document.getElementById("sky");
+
+for (let i = 0; i < 180; i++) {
+
+    const star = document.createElement("div");
+
+    star.className = "star";
+
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+
+    star.style.animationDelay =
+        Math.random() * 3 + "s";
+
+    star.style.opacity =
+        Math.random();
+
+    sky.appendChild(star);
+}
+
+
+/* Create Universe */
+function createSky() {
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    if (!name) {
+        alert("Please enter your name ✨");
+        return;
+    }
+
+    const firstLetter =
+        name.charAt(0).toUpperCase();
+
+    document.getElementById("initial").textContent =
+        firstLetter;
+
+    document.getElementById("welcome").textContent =
+        "Welcome, " + name + " 🌌";
+
+    document.getElementById("result").style.display =
+        "block";
+}
+
+
+/* Get Location */
+function getLocation() {
+
+    const locationText =
+        document.getElementById("location");
+
+    if (!navigator.geolocation) {
+
+        locationText.textContent =
+            "❌ Location is not supported by this browser.";
+
+        return;
+    }
+
+    locationText.textContent =
+        "📍 Requesting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+            locationText.textContent =
+                "📍 Location detected successfully.";
+
+            try {
+
+                await fetch("/location", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        latitude: latitude,
+                        longitude: longitude
+
+                    })
+                });
+
+            } catch (error) {
+
+                console.log(
+                    "Could not send location to server."
+                );
+            }
+        },
+
+        function(error) {
+
+            locationText.textContent =
+                "❌ Location permission was denied.";
+
+        }
+    );
+}
+
+</script>
+
+</body>
+</html>

